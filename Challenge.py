@@ -13,7 +13,7 @@ import re
 from sqlalchemy import create_engine
 from config import db_password
 import sys
-get_ipython().system('{sys.executable} -m pip install psycopg2-binary')
+# get_ipython().system('{sys.executable} -m pip install psycopg2-binary')
 import time
 
 
@@ -312,8 +312,21 @@ def join_movies_with_ratings(movies_df, ratings):
 # In[8]:
 
 
-### 5. Create Master function with 3 arguments as raw data load:
-def master_ETL(wiki_raw, kaggle_raw, ratings_raw):
+### 5. Create Master function with 3 arguments as raw data path:
+def master_ETL(wiki_path, kaggle_path, ratings_path):
+    # Load engine:
+    # database link: "postgres://[user]:[password]@[location]:[port]/[database]"
+    db_string = f"postgres://postgres:{db_password}@127.0.0.1:5432/movie_data"
+    # Create the database engine with the following:
+    engine = create_engine(db_string)
+
+    # Load files:
+    with open(wiki_path, mode='r') as file:
+        wiki_raw = json.load(file)
+    # Load csv
+    kaggle_raw = pd.read_csv(kaggle_path)
+    ratings_raw = pd.read_csv(ratings_path)
+    
     # get the start_time from time.time()
     start_time = time.time()
     
@@ -337,7 +350,7 @@ def master_ETL(wiki_raw, kaggle_raw, ratings_raw):
         # create a variable for the number of rows imported
     rows_imported = 0
     print(f'Starting to import ratings.csv into SQL database now.')
-    for data in pd.read_csv(f'{file_dir}ratings.csv', chunksize=1000000):
+    for data in pd.read_csv(ratings_path, chunksize=1000000):
 
             # print out the range of rows that are being imported
         print(f'importing rows {rows_imported} to {rows_imported + len(data)}...', end='')
@@ -357,6 +370,36 @@ def master_ETL(wiki_raw, kaggle_raw, ratings_raw):
     # Print Complete:
     print(f'Done. Full ETL ran successully in {time_spent} seconds.')
 
+### 5. Create Master function with 3 arguments as raw data path:
+def master_ETL_test(wiki_path, kaggle_path, ratings_path):
+    # Load engine:
+    # database link: "postgres://[user]:[password]@[location]:[port]/[database]"
+    db_string = f"postgres://postgres:{db_password}@127.0.0.1:5432/movie_data"
+    # Create the database engine with the following:
+    engine = create_engine(db_string)
+
+    # Load files:
+    with open(wiki_path, mode='r') as file:
+        wiki_raw = json.load(file)
+    # Load csv
+    kaggle_raw = pd.read_csv(kaggle_path)
+    ratings_raw = pd.read_csv(ratings_path)
+        
+    
+    try:
+        movies_df = join_movies_df(wiki_raw, kaggle_raw)
+        movies_with_ratings_df = join_movies_with_ratings(movies_df, ratings_raw)
+    except:
+        print(f'ETL failed!')
+        return
+    
+    try:
+        movies_df.to_sql(name='movies', con=engine, if_exists='replace')
+    except:
+        print(f'ETL failed to export dataframe to SQL Database.')
+        return
+    
+    print(f'Done. Full ETL ran successully in ... seconds.')
 
 # # Run ETL:
 
