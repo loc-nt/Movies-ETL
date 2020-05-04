@@ -2,7 +2,7 @@
 
 ## CHALLENGE:
 
-The ETL pipeline is using the following assumptions:
+The ETL function is using the following assumptions:
 1. The environment platform has fully installed all necessary dependencies below:
 
 > import json  
@@ -28,3 +28,5 @@ The ETL pipeline is using the following assumptions:
 7. We kept most of the data available in Kaggle and dropped the same data in Wikipedia because the Kaggle data just looks more accurate and structured. Therefore, I assume that the Kaggle data is more accurate than Wikipedia.
 
 8. Since the function will replace the current 'movies' table in the Database, I assume that the new updated data will always be equal or better quality, and no need to keep the old data anymore.
+
+In addition, we also have a dataframe of movies with rating data, which may provide great insights when doing analysis later. I'd recommend Britta to import them into the Database for the Hackathon besides current movies and ratings table.
