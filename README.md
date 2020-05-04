@@ -5,15 +5,15 @@
 The ETL pipeline is using the following assumptions:
 1. The environment platform has fully installed all necessary dependencies below:
 
-> import json
-> import pandas as pd
-> import numpy as np
-> import re
-> from sqlalchemy import create_engine
-> from config import db_password
-> import sys
-> !{sys.executable} -m pip install psycopg2-binary
-> import time
+> import json  
+> import pandas as pd  
+> import numpy as np  
+> import re  
+> from sqlalchemy import create_engine  
+> from config import db_password  
+> import sys  
+> !{sys.executable} -m pip install psycopg2-binary  
+> import time  
 
 2. In the Wikipedia data, there should be no new alternative titles since the function will not be able to capture them. However, we decided to use the title from the Kaggle metadata instead, so these titles from Wikipedia might not be relevant.
 
